@@ -3,19 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cocktail API</title>
+    <title>Sunset Tracker</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <header>
-        <h1>Legendärs Projekt</h1>
-
+        <h1>Wo gibt es heute den schönsten Sonnenauf- oder untergang?</h1>
     </header>
-    <main>
-        <h2>Main Content</h2>
-        <p>This is the main content of the page.</p>
 
+    <main>
+        <div class="cards-container">
+
+            <div class="city-card" id="card-genf">
+                <h2>Genf</h2>
+
+                <div class="city-details">
+
+                   <div class="weather-icon-container">
+                    <img src="" alt="Wetter Icon" class="weather-icon" id="icon-genf">
+                   </div>
+
+                   <p class="weather-info">
+                    <span id="temp-genf"></span>,
+                    <br> <span id="description-genf"></span>
+                   </p>
+
+                   <div class="sun-info">
+                    <p id="block-sunset-genf">Nächster Sonnenuntergang: <br> <span id="sunset-genf"></span></p>
+                    <p id="block-sunrise-genf">Nächster Sonnenaufgang: <br> <span id="sunrise-genf"></span></p>
+                   </div>
+                </div>
+            </div>
+
+
+            <div class="city-card" id="card-basel">
+                <h2>Basel</h2>
+
+                <div class="city-details">
+
+                   <div class="weather-icon-container">
+                    <img src="" alt="Wetter Icon" class="weather-icon" id="icon-basel">
+                   </div> 
+
+                   <p class="weather-info">
+                    <span id="temp-basel"></span>,
+                    <br> <span id="description-basel"></span>
+                   </p>
+
+                   <div class="sun-info">
+                    <p id="block-sunset-basel">Nächster Sonnenuntergang: <br> <span id="sunset-basel"></span></p>
+                    <p id="block-sunrise-basel">Nächster Sonnenaufgang: <br> <span id="sunrise-basel"></span></p>
+                   </div>
+                </div>
+            </div>
+
+            <div class="city-card" id="card-lugano">
+                <h2>Lugano</h2>
+
+                <div class="city-details">
+
+                   <div class="weather-icon-container">
+                    <img src="" alt="Wetter Icon" class="weather-icon" id="icon-lugano">
+                   </div> 
+
+                   <p class="weather-info">
+                    <span id="temp-lugano"></span>,
+                    <br> <span id="description-lugano"></span>
+                   </p>
+
+                   <div class="sun-info">
+                    <p id="block-sunset-lugano">Nächster Sonnenuntergang: <br> <span id="sunset-lugano"></span></p>
+                    <p id="block-sunrise-lugano">Nächster Sonnenaufgang: <br> <span id="sunrise-lugano"></span></p>
+                   </div>
+                </div>
+            </div>
+        </div>
     </main>
+
+
     <footer>
         <p>This is the footer of the page.</p>
 
