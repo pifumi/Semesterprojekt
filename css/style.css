@@ -1,11 +1,68 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+@import "fonts.css";
+@import "resets.css";
 
+:root {
+    font-size: 16px;
+    
+    /* Farben */
+    --card-bg: #ffffff;
+    --card-title: #B61E79;
+    --card-text: #565656;
+}
 
 body {
-    background-color: pink;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: linear-gradient(160deg, #c969e0 0%, #f178a8 40%, #f9a86a 70%, #fcd34d 100%);
+    font-family: 'Modak', Arial, Helvetica, sans-serif;
+    font-weight: 300;
 }
 
+main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cards-container {
+    display: flex;
+    gap: 5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.city-card {
+    background: var(--card-bg);
+    padding: 1.5rem 1.25rem;
+    width: 200px;
+    text-align: center;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+
+    h2 {
+        color: var(--card-title);
+    }
+}
+
+.city-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.weather-icon {
+    width: 90px;
+    height: 90px;
+}
+
+.weather-info, .sun-info {
+    color: var(--card-text); 
+}
+
+.sun-info p + p {
+    margin-top: 1rem;
+}

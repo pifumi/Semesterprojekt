@@ -1,0 +1,50 @@
+/* weights
+300: thin
+400: regular
+500: medium
+600: semibold
+700: bold
+800: extrabold
+900: black
+*/
+
+/*Regular*/
+
+@font-face {
+  font-family: 'Modak';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('./fonts/Modak-Regular.woff') format('woff'),
+       url('./fonts/Modak-Regular.woff2') format('woff2');
+}
+
+/*Medium*/
+@font-face {
+  font-family: 'Modak';
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+  src: url('./fonts/Modak-Regular.woff') format('woff'),
+       url('./fonts/Modak-Regular.woff2') format('woff2');
+}
+
+/*Semibold*/
+@font-face {
+  font-family: 'Modak';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('./fonts/Modak-Regular.woff') format('woff'),
+       url('./fonts/Modak-Regular.woff2') format('woff2');
+}
+
+/*Bold*/
+@font-face {
+  font-family: 'Modak';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('./fonts/Modak-Regular.woff') format('woff'),
+       url('./fonts/Modak-Regular.woff2') format('woff2');
+}
