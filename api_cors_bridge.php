@@ -1,6 +1,10 @@
 <?php
+
+//lat und lon übernehmen
+$lat = $_GET['lat'];
+$lon = $_GET['lon'];
 // api-url
-$url = 'https://api.open-meteo.com/v1/forecast?latitude=46.2017559&longitude=6.1466014&current=temperature_2m,weather_code&timezone=Europe/Zurich'; // url der api mit cors-problemen, z.B. https://leafletjs.com/reference.html
+$url = "https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&current=temperature_2m,weather_code,is_day&timezone=Europe/Zurich"; // url der api mit cors-problemen, z.B. https://leafletjs.com/reference.html
 
 // do request
 $ch = curl_init($url);

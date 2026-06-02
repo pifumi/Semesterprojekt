@@ -60,19 +60,19 @@ function updateSunDisplay(cityId) {
 }
 
 
-// Wetter-Code in Text umwandeln
-function getWeatherDescription(code) {
-  if (code === 0) return "Klarer Himmel";
-  if (code >= 1 && code <= 3) return "Bewölkt";
-  if (code >= 51 && code <= 67) return "Regen";
-  if (code >= 71 && code <= 77) return "Schnee";
-  if (code >= 95) return "Gewitter";
-  return "Wechselhaft";
+// Wetter-Code in Text und Icon umwandeln
+function getWeatherDescIcon(code, isDay) {
+  if (code === 0) return {text: "Klarer Himmel", icon: "img/svg/Sonne.svg"};
+  if (code >= 1 && code <= 3) return {text: "Bewölkt", icon: "img/svg/Wolke.svg"};
+  if (code >= 51 && code <= 67) return {text: "Regen", icon: "img/svg/Regen.svg"};
+  if (code >= 71 && code <= 77) return {text: "Schnee", icon: "img/svg/Wolke_Schnee.svg"};
+  if (code >= 95) return {text:"Gewitter", icon: "img/svg/Blitz_Regen.svg"};
+  return {text: "Wechselhaft", icon: isDay? "img/svg/Sonne_Wolke.svg" : "img/svg/Mond_Wolke.svg"};
 }
 
 // Wetter-Api laden
 async function loadWeatherData(lat, lon) {
-  const url = '../api_cors_bridge.php';
+  const url = `api_cors_bridge.php?lat=${lat}&lon=${lon}`;
 
   try {
     const response = await fetch(url);
@@ -109,17 +109,17 @@ async function startApp() {
 
     // Wetter-Daten ins html schreiben
     if (weatherData && weatherData.current) {
-      const desc = getWeatherDescription(weatherData.current.weather_code);
+      const weather = getWeatherDescIcon(weatherData.current.weather_code, weatherData.current.is_day);
       const temp = Math.round(weatherData.current.temperature_2m);
 
       document.getElementById(`temp-${city.id}`).innerText = `${temp}°C`;
-      document.getElementById(`description-${city.id}`).innerText = desc;
+      document.getElementById(`description-${city.id}`).innerText = weather.text;
+
+      const iconEl = document.getElementById(`icon-${city.id}`);
+      iconEl.src = weather.icon;
+      iconEl.alt = weather.text;
     }
   }
 }
 
 startApp();
-
-    const weatherData = await loadWeatherData(city.lat, city.lon);
-
-    console.log(weatherData);
