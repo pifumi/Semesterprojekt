@@ -8,6 +8,7 @@
 900: black
 */
 
+/*Modak*/
 /*Regular*/
 
 @font-face {
@@ -47,4 +48,15 @@
   font-display: swap;
   src: url('./fonts/Modak-Regular.woff') format('woff'),
        url('./fonts/Modak-Regular.woff2') format('woff2');
+}
+
+
+/*Inter*/
+@font-face {
+  font-family: 'Inter';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('./fonts/Inter-VariableFont_opsz\,wght.woff') format('woff'),
+       url('./fonts/Inter-VariableFont_opsz\,wght.woff2') format('woff2');
 }

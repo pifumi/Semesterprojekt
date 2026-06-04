@@ -44,19 +44,22 @@ async function loadSunData(lat, lon) {
 }
 
 // Uhrzeit Auf- und Untergang eintragen
-function updateSunDisplay(cityId) {
+function updateSunDisplay(cityId, sunData) {
   const sunriseBlock = document.getElementById(`block-sunrise-${cityId}`);
   const sunsetBlock = document.getElementById(`block-sunset-${cityId}`);
-  const currentHour = new Date().getHours();
+  
+  const timeNow = new Date();
+  const sunrise = new Date(sunData.results.sunrise);
+  const sunset = new Date(sunData.results.sunset);
 
   // Je nach Uhrzeit Auf- oder Untergang beim Hovern anzeigen
-  if (currentHour >= 9 && currentHour < 22) {
-    sunsetBlock.classList.remove('hidden');
-    sunriseBlock.classList.add('hidden');
-  } else {
-    sunriseBlock.classList.remove('hidden');
-    sunsetBlock.classList.add('hidden');
-  }
+  let nextBlock;
+  if (timeNow < sunrise) nextBlock = sunriseBlock;
+  else if (timeNow < sunset) nextBlock = sunsetBlock;
+  else nextBlock = sunriseBlock;
+
+  sunriseBlock.classList.toggle('is-next', nextBlock === sunriseBlock);
+  sunsetBlock.classList.toggle('is-next', nextBlock === sunsetBlock);
 }
 
 
@@ -104,7 +107,7 @@ async function startApp() {
       document.getElementById(`sunrise-${city.id}`).innerText = `${sunriseTime} Uhr`
       document.getElementById(`sunset-${city.id}`).innerText = `${sunsetTime} Uhr`;
 
-      updateSunDisplay(city.id);
+      updateSunDisplay(city.id, sunData);
     }
 
     // Wetter-Daten ins html schreiben
@@ -123,3 +126,22 @@ async function startApp() {
 }
 
 startApp();
+
+
+// Cards auf- und zuklappen
+const allCards = document.querySelectorAll('.city-card');
+allCards.forEach(card => {
+  card.addEventListener('click', () => {
+    const wasOpen = card.classList.contains('open');
+
+    allCards.forEach(card => card.classList.remove('open'));
+    if (!wasOpen) card.classList.add('open');
+  });
+});
+
+// Klick ausserhalb einer Card schliesst die offene
+document.addEventListener('click', (event) => {
+  if (!event.target.closest('.city-card')) {
+    allCards.forEach(card => card.classList.remove('open'));
+  }
+});

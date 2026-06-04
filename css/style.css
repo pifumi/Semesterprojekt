@@ -5,18 +5,35 @@
     font-size: 16px;
     
     /* Farben */
+    --title: #ceb685;
     --card-bg: #ffffff;
     --card-title: #B61E79;
     --card-text: #565656;
+
+    
+    /*Schriften*/
+    --f-title: 400 1.5rem 'Modak', sans-serif;
+    --f-card-title: 400 2rem 'Modak', sans-serif;
+    --f-card-lauftext: 400 1rem 'Inter', sans-serif;
 }
+
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1.5rem;
+    padding: 5rem;
+    font: var(--f-title);
+    color: var(--title);
+}
+
 
 body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     background: linear-gradient(160deg, #c969e0 0%, #f178a8 40%, #f9a86a 70%, #fcd34d 100%);
-    font-family: 'Modak', Arial, Helvetica, sans-serif;
-    font-weight: 300;
+    font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
 }
 
 main {
@@ -28,6 +45,7 @@ main {
 
 .cards-container {
     display: flex;
+    align-items: center;
     gap: 5rem;
     justify-content: center;
     flex-wrap: wrap;
@@ -42,15 +60,37 @@ main {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 
     h2 {
+        font: var(--f-card-title);
         color: var(--card-title);
     }
 }
+
 
 .city-details {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1rem;
+    
+    /* Ausgangszustand */
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    overflow: hidden;
+
+    transition: max-height 0.5s ease, opacity 0.5s ease, margin-top 0.5s ease;
+}
+
+/* Hovern */
+.city-card:hover:not(.open) .city-details {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 1rem;
+}
+
+.city-card.open .city-details {
+    max-height: 500px;
+    opacity: 1;
     margin-top: 1rem;
 }
 
@@ -60,9 +100,44 @@ main {
 }
 
 .weather-info, .sun-info {
-    color: var(--card-text); 
+   font: var(--f-card-lauftext);
+   color: var(--card-text);
 }
 
-.sun-info p + p {
-    margin-top: 1rem;
+/* Ausgangszustand */
+.weather-info {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    
+    transition: max-height 0.5s ease, opacity 0.5s ease;
+}
+
+.sun-info p:not(.is-next) {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+
+    transition: max-height 0.5s ease, opacity 0.5s ease;
+}
+
+/* Aufgeklappt */
+.city-card.open .weather-info {
+    max-height: 100px;
+    opacity: 1;
+}
+
+.city-card.open .sun-info p:not(.is-next) {
+    max-height: 100px;
+    opacity: 1;
+}
+
+.sun-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.is-next {
+    order: -1;
 }
