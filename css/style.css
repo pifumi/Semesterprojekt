@@ -5,8 +5,8 @@
     font-size: 16px;
     
     /* Farben */
-    --title: #ceb685;
-    --card-bg: #ffffff;
+    --title: #e4d7be;
+    --card-bg: rgba(255, 255, 255, 0.8);
     --card-title: #B61E79;
     --card-text: #565656;
 
@@ -15,6 +15,11 @@
     --f-title: 400 1.5rem 'Modak', sans-serif;
     --f-card-title: 400 2rem 'Modak', sans-serif;
     --f-card-lauftext: 400 1rem 'Inter', sans-serif;
+    --f-card-lauftext-semibold: 600 1.1rem 'Inter', sans-serif;
+
+    /*Schatten*/
+    --shadow-card: 0 6px 15px rgba(0, 0, 0, 0.3);
+    --shadow-card-floating: 0 0 30px 10px rgba(247, 204, 62, 0.9);
 }
 
 header {
@@ -32,21 +37,32 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: linear-gradient(160deg, #c969e0 0%, #f178a8 40%, #f9a86a 70%, #fcd34d 100%);
     font-family: 'Inter', 'Arial', 'Helvetica', sans-serif;
+
+    /*Backup-Hintergrund*/
+    background: linear-gradient(160deg, #c969e0 0%, #f178a8 40%, #f9a86a 70%, #fcd34d 100%);
+
+    /*Eigenschaften Hintergrundbild*/
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
 }
 
 main {
     flex: 1;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 5rem;
 }
 
 .cards-container {
     display: flex;
     align-items: center;
     gap: 5rem;
+    min-height: 450px;
     justify-content: center;
     flex-wrap: wrap;
 }
@@ -57,7 +73,8 @@ main {
     width: 200px;
     text-align: center;
     border-radius: 20px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-card);
+    transition: transform 0.5s ease;
 
     h2 {
         font: var(--f-card-title);
@@ -140,4 +157,71 @@ main {
 
 .is-next {
     order: -1;
+}
+
+
+/*Beste Card hervorheben*/
+
+.city-card.best {
+    box-shadow: var(--shadow-card),
+    var(--shadow-card-floating);
+
+    animation: float 2s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {transform: translateY(0); }
+    50% {transform: translateY(-15px); }
+}
+
+.city-card.best.open {
+    animation: none;
+}
+
+
+/*Textblock beste Option*/
+.best-option {
+    background: var(--card-bg);
+    padding: 1.5rem 1.25rem;
+    max-width: 800px;
+    text-align: center;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+    font: var(--f-card-lauftext-semibold);
+}
+
+
+/*Mobile*/
+@media (max-width: 768px) {
+    header {
+        padding: 2rem 1rem;
+    }
+
+    .cards-container {
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 640px) {
+    header {
+        padding: 1.5rem 1rem;
+    }
+
+    .cards-container {
+        flex-direction: column;
+        gap: 1.5rem;
+        min-height: auto;
+    }
+
+    .best-option {
+        max-width: 90%;
+    }
+}
+
+@media (hover: hover) {
+    .city-card:hover:not(.open) .city-details {
+        max-height: 500px;
+        opacity: 1;
+        margin-top: 1rem;
+    }
 }

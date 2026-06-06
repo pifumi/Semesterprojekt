@@ -87,8 +87,43 @@ async function loadWeatherData(lat, lon) {
 }
 
 
+// Hintergrundbild dynamisch an Sonnenstand anpassen
+function setBackground(sunData) {
+  const results = sunData.results;
+  const now = new Date().getTime();
+
+  const sunrise = new Date(results.sunrise).getTime();
+  const sunset = new Date(results.sunset).getTime();
+  const civilBegin = new Date(results.civil_twilight_begin).getTime();
+  const civilEnd = new Date(results.civil_twilight_end).getTime();
+  const nauticalBegin = new Date(results.nautical_twilight_begin).getTime();
+  const nauticalEnd = new Date(results.nautical_twilight_end).getTime();
+
+  // Golden-Hour und Fenster um Sonnenauf- und Untergang wird nicht direkt von API geliefert
+  const goldenHour = 45 * 60 * 1000;
+  const sunEvent = 15 * 60 *1000;
+
+  let phase;
+  if (now < nauticalBegin) phase = 'night';
+  else if (now < civilBegin) phase = 'blue-hour';
+  else if (now < sunrise - sunEvent) phase = 'sun-event';
+  else if (now < sunrise + sunEvent) phase = 'sun-event';
+  else if (now < sunrise + goldenHour) phase = 'golden-hour';
+  else if (now < sunset - goldenHour) phase = 'day';
+  else if (now < sunset - sunEvent) phase = 'golden-hour';
+  else if (now < sunset + sunEvent) phase = 'sun-event';
+  else if (now < civilEnd) phase = 'sun-event';
+  else if (now < nauticalEnd) phase = 'blue-hour';
+  else phase = 'night';
+
+  document.body.style.backgroundImage = `url('img/${phase}.jpg')`;
+}
+
+
 // Funktionen ausführen
 async function startApp() {
+  const candidates = [];
+
   for (const city of cities) {
 
     // Sonnen-Daten laden
@@ -108,12 +143,58 @@ async function startApp() {
       document.getElementById(`sunset-${city.id}`).innerText = `${sunsetTime} Uhr`;
 
       updateSunDisplay(city.id, sunData);
+
+      //Hintergrund dynamisch anpassen
+      if (city === cities[0]) {
+        setBackground(sunData);
+      }
+    }
+
+    // Zeitpunkt des nächsten Auf- oder Untergangs bestimmen
+    function getNextEventTime(sunData) {
+      const now = new Date();
+      const sunrise = new Date(sunData.results.sunrise);
+      const sunset = new Date(sunData.results.sunset);
+
+      if (now < sunrise) return sunrise;
+      if (now < sunset) return sunset;
+
+      //Sonnenaufgang bestimmen, wenn noch der vorherige Tag ist
+      const tomorrowSunrise = new Date(sunrise);
+      tomorrowSunrise.setDate(tomorrowSunrise.getDate() + 1);
+      return tomorrowSunrise;
+    }
+
+    // Aus der Vorhersage passende Stunde auswählen
+    function getForecastHour(weatherData, targetTime) {
+      const times = weatherData.hourly.time;
+      const target = targetTime.getTime();
+
+      let bestIndex = 0;
+      let bestDiff = Infinity;
+      for (let i = 0; i < times.length; i++) {
+        const diff = Math.abs(new Date(times[i]).getTime() - target);
+        if (diff < bestDiff) {
+          bestDiff = diff;
+          bestIndex = i;
+        }
+      }
+
+      return {
+        temperature_2m: weatherData.hourly.temperature_2m[bestIndex],
+        weather_code: weatherData.hourly.weather_code[bestIndex],
+        is_day: weatherData.hourly.is_day[bestIndex],
+        cloud_cover: weatherData.hourly.cloud_cover[bestIndex]
+      };
     }
 
     // Wetter-Daten ins html schreiben
-    if (weatherData && weatherData.current) {
-      const weather = getWeatherDescIcon(weatherData.current.weather_code, weatherData.current.is_day);
-      const temp = Math.round(weatherData.current.temperature_2m);
+    if (weatherData && weatherData.hourly && sunData && sunData.status === "OK") {
+      const nextTime = getNextEventTime(sunData);
+      const forecast = getForecastHour(weatherData, nextTime);
+
+      const weather = getWeatherDescIcon(forecast.weather_code, forecast.is_day);
+      const temp = Math.round(forecast.temperature_2m);
 
       document.getElementById(`temp-${city.id}`).innerText = `${temp}°C`;
       document.getElementById(`description-${city.id}`).innerText = weather.text;
@@ -121,11 +202,34 @@ async function startApp() {
       const iconEl = document.getElementById(`icon-${city.id}`);
       iconEl.src = weather.icon;
       iconEl.alt = weather.text;
+
+      candidates.push({
+        id: city.id,
+        name: city.name,
+        cloud: forecast.cloud_cover
+      });
+    }
+  }
+
+  //Beste Option bestimmen
+  const cloud_maximum = 70;
+  const bestOption = document.getElementById('best-option');
+
+  if (candidates.length > 0) {
+    const best = candidates.reduce((a,b) => (b.cloud < a.cloud ? b : a));
+    
+    if (best.cloud <= cloud_maximum) {
+      document.getElementById(`card-${best.id}`).classList.add('best');
+      bestOption.innerText = `Den schönsten Sonnenuntergang gibt es voraussichtlich in ${best.name} mit ${best.cloud}% Bewölkung.`;
+    } else {
+      bestOption.innerText = 'Heute gibt es leider nirgends einen schönen Sonnenuntergang zu sehen, da es zu stark bewölkt ist.';
     }
   }
 }
 
+//Funktion aufrufen
 startApp();
+
 
 
 // Cards auf- und zuklappen
@@ -138,6 +242,7 @@ allCards.forEach(card => {
     if (!wasOpen) card.classList.add('open');
   });
 });
+
 
 // Klick ausserhalb einer Card schliesst die offene
 document.addEventListener('click', (event) => {
