@@ -5,6 +5,7 @@
 }
 html {
     scroll-behavior: smooth;
+    scroll-padding-bottom: 16rem;
 }
 body {
     -webkit-font-smoothing: antialiased;

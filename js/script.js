@@ -67,14 +67,43 @@ function updateSunDisplay(cityId, sunData) {
 
 
 // Wetter-Code in Text und Icon umwandeln
-function getWeatherDescIcon(code, isDay) {
-  if (code === 0) return {text: "Klarer Himmel", icon: "img/svg/Sonne.svg"};
-  if (code >= 1 && code <= 3) return {text: "Bewölkt", icon: "img/svg/Wolke.svg"};
-  if (code >= 51 && code <= 67) return {text: "Regen", icon: "img/svg/Regen.svg"};
-  if (code >= 71 && code <= 77) return {text: "Schnee", icon: "img/svg/Wolke_Schnee.svg"};
-  if (code >= 95) return {text:"Gewitter", icon: "img/svg/Blitz_Regen.svg"};
-  return {text: "Wechselhaft", icon: isDay? "img/svg/Sonne_Wolke.svg" : "img/svg/Mond_Wolke.svg"};
+function getWeatherDescIcon(code) {
+  if (code === 0)
+    {return {text: "Klarer Himmel", icon: "img/svg/Sonne.svg"};
+  }
+
+  if (code === 1 || code === 2)
+    {return {text: "Teils bewölkt", icon: "img/svg/Sonne_Wolke.svg"};
+  }
+
+  if (code === 3)
+    {return {text: "Stark bewölkt", icon: "img/svg/Wolke.svg"};
+  }
+
+  if (code === 45 || code === 48)
+    {return { text: "Nebel", icon: "img/svg/Wolke.svg" };
+  }
+
+  if (code === 51 || code === 53 || code === 61 || code === 80) {
+    return { text: "Leichter Regen", icon: "img/svg/Niesel.svg" };
 }
+
+  if (code === 55 || code === 63 || code === 65 || code === 81 || code === 82 || code === 56 || code === 57 || code === 66 || code === 67) {
+    return { text: "Regen", icon: "img/svg/Regen.svg" };
+  }
+
+  if (code === 71 || code === 85) {
+    return { text: "Leichter Schnee", icon: "img/svg/Wolke_wenigSchnee.svg"};
+  }
+
+  if (code >= 95) {
+    return { text:"Gewitter", icon: "img/svg/Blitz_Regen.svg" };
+  }
+
+  return { text: "Wechselhaft", icon: "img/svg/Sonne_Wolke.svg" };
+}
+
+
 
 // Wetter-Api laden
 async function loadWeatherData(lat, lon) {
@@ -90,9 +119,20 @@ async function loadWeatherData(lat, lon) {
 }
 
 
+// Ermitteln, welches Event als nächstes folgt
+function getNextEventType(sunData) {
+  const now = new Date();
+  const sunrise = new Date(sunData.results.sunrise);
+  const sunset = new Date(sunData.results.sunset);
+  if (now < sunrise) return 'sunrise';
+  if (now < sunset) return 'sunset';
+  return 'sunrise';
+}
+
+
 // Hilfsfunktion Wetter-Events befüllen
 function fillEvent(eventType, cityId, forecast) {
-  const weather = getWeatherDescIcon(forecast.weather_code, forecast.is_day);
+  const weather = getWeatherDescIcon(forecast.weather_code);
   const temp = Math.round(forecast.temperature_2m);
 
   document.getElementById(`temp-${eventType}-${cityId}`).innerText = `${temp}°C`;
@@ -117,8 +157,8 @@ function setBackground(sunData) {
   const nauticalEnd = new Date(results.nautical_twilight_end).getTime();
 
   // Golden-Hour und Fenster um Sonnenauf- und Untergang wird nicht direkt von API geliefert
-  const goldenHour = 45 * 60 * 1000;
-  const sunEvent = 15 * 60 *1000;
+  const goldenHour = 90 * 60 * 1000;
+  const sunEvent = 30 * 60 *1000;
 
   let phase;
   if (now < nauticalBegin) phase = 'night';
@@ -134,6 +174,7 @@ function setBackground(sunData) {
   else phase = 'night';
 
   document.body.style.backgroundImage = `url('img/${phase}.jpg')`;
+  document.body.dataset.phase = phase;
 }
 
 
@@ -216,28 +257,41 @@ async function startApp() {
 
       // Beste Option orientiert sich an nächstem Ereignis
       const nextForecast = getForecastHour(weatherData, getNextEventTime(sunData));
+      const nextType = getNextEventType(sunData);
 
       candidates.push({
         id: city.id,
         name: city.name,
-        cloud: nextForecast.cloud_cover
+        cloud: nextForecast.cloud_cover,
+        event: nextType
       });
+
+      // Daten an Karte hinterlegen
+      const cardElement = document.getElementById(`card-${city.id}`);
+      cardElement.dataset.name = city.name;
+      cardElement.dataset.cloud = Math.round(nextForecast.cloud_cover);
+      cardElement.dataset.event = nextType;
     }
   }
 
   // Beste Option bestimmen
   const cloud_maximum = 70;
-  const bestOption = document.getElementById('best-option');
+  const bestOption = document.getElementById('info-text');
 
   if (candidates.length > 0) {
     const best = candidates.reduce((a,b) => (b.cloud < a.cloud ? b : a));
+    const eventWord = best.event === 'sunset' ? 'Sonnenuntergang' : 'Sonnenaufgang';
     
+    let defaultText;
     if (best.cloud <= cloud_maximum) {
       document.getElementById(`card-${best.id}`).classList.add('best');
-      bestOption.innerText = `Den schönsten Sonnenuntergang gibt es voraussichtlich in ${best.name} mit ${best.cloud}% Bewölkung.`;
+      defaultText = `Den schönsten ${eventWord} gibt es voraussichtlich in ${best.name} mit ${best.cloud}% Bewölkung.`;
     } else {
-      bestOption.innerText = 'Heute gibt es leider nirgends einen schönen Sonnenuntergang zu sehen, da es zu stark bewölkt ist.';
+      defaultText = `Leider gibt es voraussichtlich nirgends einen schönen ${eventWord} zu sehen.`;
     }
+
+    bestOption.innerText = defaultText;
+    bestOption.dataset.defaultText = defaultText;
   }
 }
 
@@ -248,12 +302,25 @@ startApp();
 
 // Cards auf- und zuklappen
 const allCards = document.querySelectorAll('.city-card');
+const bestOption = document.getElementById('info-text');
+
 allCards.forEach(card => {
   card.addEventListener('click', () => {
     const wasOpen = card.classList.contains('open');
-
     allCards.forEach(card => card.classList.remove('open'));
-    if (!wasOpen) card.classList.add('open');
+
+    if (!wasOpen) {
+      card.classList.add('open');
+      const eventWord = card.dataset.event === 'sunset' ? 'Sonnenuntergang' : 'Sonnenaufgang';
+      bestOption.innerText = `In ${card.dataset.name} liegt die Bewölkung zum nächsten ${eventWord} bei voraussichtlich ${card.dataset.cloud}%.`;
+    } else {
+      bestOption.innerText = bestOption.dataset.defaultText;
+    }
+
+    // nach dem Aufklappen nach unten scrollen
+     setTimeout(() => {
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 300);
   });
 });
 
@@ -261,6 +328,7 @@ allCards.forEach(card => {
 // Klick ausserhalb einer Card schliesst die offene
 document.addEventListener('click', (event) => {
   if (!event.target.closest('.city-card')) {
-    allCards.forEach(card => card.classList.remove('open'));
+    allCards.forEach(c => c.classList.remove('open'));
+    bestOption.innerText = bestOption.dataset.defaultText;
   }
 });

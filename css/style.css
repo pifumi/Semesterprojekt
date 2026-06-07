@@ -5,31 +5,67 @@
     font-size: 16px;
     
     /* Farben */
-    --title: #e4d7be;
+    --title: #d6c197;
+    --header-text:#565656;
     --card-bg: rgba(255, 255, 255, 0.8);
     --card-title: #B61E79;
     --card-text: #565656;
+    --card-floating: rgba(255, 255, 255, 0.9);
 
     
     /*Schriften*/
-    --f-title: 400 1.5rem 'Modak', sans-serif;
+    --f-title: 400 3rem 'Modak', sans-serif;
+    --f-subtitle: 600 1.3rem 'Inter', sans-serif;
     --f-card-title: 400 2rem 'Modak', sans-serif;
     --f-card-lauftext: 400 1rem 'Inter', sans-serif;
     --f-card-lauftext-semibold: 600 1.1rem 'Inter', sans-serif;
 
     /*Schatten*/
     --shadow-card: 0 6px 15px rgba(0, 0, 0, 0.3);
-    --shadow-card-floating: 0 0 30px 10px rgba(247, 204, 62, 0.9);
 }
+
+/*Header-Titel-Farbe je nach Hintergrund anpassen*/
+    body[data-phase="day"] {--title: #1b57c0;}
+    body[data-phase="golden-hour"] {--title: #2c60b9;}
+    body[data-phase="sun-event"] {--title: #d6c197;}
+    body[data-phase="blue-hour"] {--title: #DCB464;}
+    body[data-phase="night"] {--title: #7ab4ee;}
+
+    /*Header-Text-Farbe je nach Hintergrund anpassen */
+    body[data-phase="day"] {--header-text: #565656;}
+    body[data-phase="golden-hour"] {--header-text: #565656;}
+    body[data-phase="sun-event"] {--header-text: #dfdada;}
+    body[data-phase="blue-hour"] {--header-text: #dfdada;}
+    body[data-phase="night"] {--header-text: #dfdada;}
+
+    /*Shadow-card-floating je nach Hintergrund anpassen*/
+    body[data-phase="day"] {--card-floating: rgba(247, 204, 62, 0.9);}
+    body[data-phase="golden-hour"] {--card-floating: rgba(255, 255, 255, 0.9);}
+    body[data-phase="sun-event"] {--card-floating: rgba(255, 255, 255, 0.9);}
+    body[data-phase="blue-hour"] {--card-floating: rgba(245, 195, 32, 0.9);}
+    body[data-phase="night"] {--card-floating: rgba(235, 231, 220, 0.9);}
+
+
 
 header {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     margin: 1.5rem;
-    padding: 5rem;
+    padding: 3rem;
+    gap: 2rem;
+    text-align: center;
+
+    h1 {
     font: var(--f-title);
     color: var(--title);
+    }
+
+    p {
+        font: var(--f-subtitle);
+        color: var(--header-text);
+    }
 }
 
 
@@ -56,13 +92,14 @@ main {
     align-items: center;
     justify-content: center;
     gap: 5rem;
+    padding-bottom: 9rem;
 }
 
 .cards-container {
     display: flex;
     align-items: center;
     gap: 5rem;
-    min-height: 450px;
+    min-height: 300px;
     justify-content: center;
     flex-wrap: wrap;
 }
@@ -178,8 +215,7 @@ main {
 
 /*Beste Card hervorheben*/
 .city-card.best {
-    box-shadow: var(--shadow-card),
-    var(--shadow-card-floating);
+    box-shadow: var(--shadow-card), 0 0 30px 10px var(--card-floating);
 
     animation: float 2s ease-in-out infinite;
 }
@@ -194,8 +230,10 @@ main {
 }
 
 
-/*Textblock beste Option*/
-.best-option {
+/*Info-text unten*/
+.info-text {
+    position: fixed;
+    bottom: 8rem;
     background: var(--card-bg);
     padding: 1.5rem 1.25rem;
     max-width: 800px;
@@ -203,8 +241,22 @@ main {
     border-radius: 20px;
     box-shadow: var(--shadow-card);
     font: var(--f-card-lauftext-semibold);
+    color: var(--card-text);
 }
 
+footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 5rem;
+    padding: 1.5rem;
+    background: var(--card-bg);
+    
+    p {
+        color: var(--card-text);
+        font: var(--f-card-lauftext);
+        padding: 0.5rem 1.5rem;
+    }
+}
 
 /*Mobile*/
 @media (max-width: 768px) {
@@ -218,8 +270,29 @@ main {
 }
 
 @media (max-width: 640px) {
+
+    :root{
+        --f-title: 400 2.2rem 'Modak', sans-serif;
+        --f-subtitle: 600 1rem 'Inter', sans-serif;
+        --f-card-title: 400 1.6rem 'Modak', sans-serif;
+        --f-card-lauftext-semibold: 600 0.8rem 'Inter', sans-serif;
+    }
+
+    html {
+        scroll-padding-bottom: 40rem;
+    }
+
     header {
-        padding: 1.5rem 1rem;
+        margin-top: 0.5rem;
+        padding: 1rem 0.5rem;
+        gap: 1rem;
+    }
+
+    main {
+        justify-content: flex-start;
+        gap: 2rem;
+        padding-top: 3rem;
+        padding-bottom: 7rem;
     }
 
     .cards-container {
@@ -228,8 +301,21 @@ main {
         min-height: auto;
     }
 
-    .best-option {
-        max-width: 90%;
+    .weather-icon {
+        margin-top: -0.5rem;
+        margin-bottom: -1rem;
     }
+
+    .info-text {
+        bottom: 5rem;
+        padding: 1rem 1.25rem;
+        max-width: 90%;
+        background: rgba(255, 255, 255, 1);
+    }
+}
+
+footer {
+    margin-top: 3rem;
+    padding: 0.5rem;
 }
 

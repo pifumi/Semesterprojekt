@@ -1,0 +1,7 @@
+Bei unserem Projekt "Sunset-Tracker" geht es darum, für 3 Orte in der Schweiz das Wetter und die Sonnenaufgangs- bzw. untergangszeiten anzuzeigen. Ausserdem soll der Ort, an dem der Sonnenunter- oder aufgang am besten zu sehen ist (weil das Wetter dort am besten ist) hervorgehoben werden.
+
+Als zusätzliche Funktion passt sich ausserdem der Hintergrund je nach Uhrzeit farblich an (5 verschiedene Phasen). Aus diesem Grund nutzen wir auch zwei verschiedene APIs, da unsere Wetter-API nur SOnnenauf- und untergangszeiten liefert, jedoch keine genaueren Daten zum Sonnenstand.
+
+Die Arbeit am Projekt verlief grundsätzlich gut, es gab aber natürlich immer wieder Herausforderungen. Eine erste war, als unsere API einmal keine Daten lieferte. Da dieses Problem seither nicht mehr aufgetreten ist, gehen wir davon aus, dass es sich dabei um einen einmaligen Aussetzer handelt.
+
+Insbesondere die Arbeit in JavaScript war ebenfalls herausfordernd, da zwar immer eine grobe Idee da war, wie man etwas umsetzen könnte, wenn es aber an die konkrete Umsetzung ging, fehlte dann doch immer wieder das Wissen. Hier kam KI immer wieder zum Einsatz. Sie half uns dabei unseren groben Code konkret anzupassen, aber auch einen "Plan" zu erstellen, wie man bestimmte Ideen Schritt für Schritt sinnvoll umsetzen kann. Gerade das war teilsweise schwierig sich vorzustellen. Und auch bei der Fehlersuche hat uns KI immer wieder unterstützt. :)
