@@ -45,22 +45,25 @@ async function loadSunData(lat, lon) {
 
 // Uhrzeit Auf- und Untergang eintragen
 function updateSunDisplay(cityId, sunData) {
-  const sunriseBlock = document.getElementById(`block-sunrise-${cityId}`);
-  const sunsetBlock = document.getElementById(`block-sunset-${cityId}`);
+  const sunriseEvent = document.getElementById(`event-sunrise-${cityId}`);
+  const sunsetEvent = document.getElementById(`event-sunset-${cityId}`);
   
   const timeNow = new Date();
   const sunrise = new Date(sunData.results.sunrise);
   const sunset = new Date(sunData.results.sunset);
 
   // Je nach Uhrzeit Auf- oder Untergang beim Hovern anzeigen
-  let nextBlock;
-  if (timeNow < sunrise) nextBlock = sunriseBlock;
-  else if (timeNow < sunset) nextBlock = sunsetBlock;
-  else nextBlock = sunriseBlock;
+  let nextEvent;
+  if (timeNow < sunrise) nextEvent = sunriseEvent;
+  else if (timeNow < sunset) nextEvent = sunsetEvent;
+  else nextEvent = sunriseEvent;
 
-  sunriseBlock.classList.toggle('is-next', nextBlock === sunriseBlock);
-  sunsetBlock.classList.toggle('is-next', nextBlock === sunsetBlock);
+  sunriseEvent.classList.toggle('is-next', nextEvent === sunriseEvent);
+  sunsetEvent.classList.toggle('is-next', nextEvent === sunsetEvent);
 }
+
+
+
 
 
 // Wetter-Code in Text und Icon umwandeln
@@ -84,6 +87,20 @@ async function loadWeatherData(lat, lon) {
     console.error("Fehler beim Laden des Wetters", error);
     return false;
   }
+}
+
+
+// Hilfsfunktion Wetter-Events befüllen
+function fillEvent(eventType, cityId, forecast) {
+  const weather = getWeatherDescIcon(forecast.weather_code, forecast.is_day);
+  const temp = Math.round(forecast.temperature_2m);
+
+  document.getElementById(`temp-${eventType}-${cityId}`).innerText = `${temp}°C`;
+  document.getElementById(`description-${eventType}-${cityId}`).innerText = weather.text;
+
+  const iconEl = document.getElementById(`icon-${eventType}-${cityId}`);
+  iconEl.src = weather.icon;
+  iconEl.alt = weather.text;
 }
 
 
@@ -132,15 +149,14 @@ async function startApp() {
     // Wetter-Daten laden
     const weatherData = await loadWeatherData(city.lat, city.lon);
 
-    console.log(weatherData);
     
     // Sonnen-Daten ins html übertragen
     if (sunData && sunData.status === "OK") {
       const sunriseTime = formatTime(sunData.results.sunrise);
       const sunsetTime = formatTime(sunData.results.sunset);
 
-      document.getElementById(`sunrise-${city.id}`).innerText = `${sunriseTime} Uhr`
-      document.getElementById(`sunset-${city.id}`).innerText = `${sunsetTime} Uhr`;
+      document.getElementById(`time-sunrise-${city.id}`).innerText = `${sunriseTime} Uhr`
+      document.getElementById(`time-sunset-${city.id}`).innerText = `${sunsetTime} Uhr`;
 
       updateSunDisplay(city.id, sunData);
 
@@ -188,30 +204,28 @@ async function startApp() {
       };
     }
 
+    
+    
     // Wetter-Daten ins html schreiben
     if (weatherData && weatherData.hourly && sunData && sunData.status === "OK") {
-      const nextTime = getNextEventTime(sunData);
-      const forecast = getForecastHour(weatherData, nextTime);
+      const sunrise = new Date(sunData.results.sunrise);
+      const sunset = new Date(sunData.results.sunset);
 
-      const weather = getWeatherDescIcon(forecast.weather_code, forecast.is_day);
-      const temp = Math.round(forecast.temperature_2m);
+      fillEvent('sunrise', city.id, getForecastHour(weatherData, sunrise));
+      fillEvent('sunset', city.id, getForecastHour(weatherData, sunset));
 
-      document.getElementById(`temp-${city.id}`).innerText = `${temp}°C`;
-      document.getElementById(`description-${city.id}`).innerText = weather.text;
-
-      const iconEl = document.getElementById(`icon-${city.id}`);
-      iconEl.src = weather.icon;
-      iconEl.alt = weather.text;
+      // Beste Option orientiert sich an nächstem Ereignis
+      const nextForecast = getForecastHour(weatherData, getNextEventTime(sunData));
 
       candidates.push({
         id: city.id,
         name: city.name,
-        cloud: forecast.cloud_cover
+        cloud: nextForecast.cloud_cover
       });
     }
   }
 
-  //Beste Option bestimmen
+  // Beste Option bestimmen
   const cloud_maximum = 70;
   const bestOption = document.getElementById('best-option');
 
@@ -227,7 +241,7 @@ async function startApp() {
   }
 }
 
-//Funktion aufrufen
+// Funktion aufrufen
 startApp();
 
 
