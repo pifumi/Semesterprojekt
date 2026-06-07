@@ -173,7 +173,7 @@ function setBackground(sunData) {
   else if (now < sunset - sunEvent) phase = 'golden-hour';
   else if (now < sunset + sunEvent) phase = 'sun-event';
   else if (now < civilEnd) phase = 'blue-hour';
-  else if (now < nauticalEnd) phase = 'blue-hour';
+  else if (now < nauticalEnd) phase = 'night';
   else phase = 'night';
 
   document.body.style.backgroundImage = `url('img/${phase}.jpg')`;
