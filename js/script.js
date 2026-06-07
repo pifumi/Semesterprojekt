@@ -165,7 +165,7 @@ function setBackground(sunData) {
 
   let phase;
   if (now < nauticalBegin) phase = 'night';
-  else if (now < civilBegin) phase = 'blue-hour';
+  else if (now < civilBegin) phase = 'night';
   else if (now < sunrise - sunEvent) phase = 'blue-hour';
   else if (now < sunrise + sunEvent) phase = 'sun-event';
   else if (now < sunrise + goldenHour) phase = 'golden-hour';
