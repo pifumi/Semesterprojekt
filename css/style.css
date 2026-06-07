@@ -267,6 +267,10 @@ footer {
     .cards-container {
         gap: 2rem;
     }
+
+    .info-text {
+        max-width: 90%;
+    }
 }
 
 @media (max-width: 640px) {
@@ -279,7 +283,7 @@ footer {
     }
 
     html {
-        scroll-padding-bottom: 40rem;
+        scroll-padding-bottom: 10rem;
     }
 
     header {
@@ -312,10 +316,12 @@ footer {
         max-width: 90%;
         background: rgba(255, 255, 255, 1);
     }
-}
 
-footer {
+    footer {
     margin-top: 3rem;
     padding: 0.5rem;
+    }
 }
+
+
 

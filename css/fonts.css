@@ -8,8 +8,8 @@
 900: black
 */
 
-/*Modak*/
-/*Regular*/
+
+/*Modak - Regular*/
 
 @font-face {
   font-family: 'Modak';
@@ -20,7 +20,7 @@
        url('./fonts/Modak-Regular.woff2') format('woff2');
 }
 
-/*Medium*/
+/*Modak - Medium*/
 @font-face {
   font-family: 'Modak';
   font-weight: 500;
@@ -30,7 +30,7 @@
        url('./fonts/Modak-Regular.woff2') format('woff2');
 }
 
-/*Semibold*/
+/*Modak - Semibold*/
 @font-face {
   font-family: 'Modak';
   font-weight: 600;
@@ -40,7 +40,7 @@
        url('./fonts/Modak-Regular.woff2') format('woff2');
 }
 
-/*Bold*/
+/*Modak - Bold*/
 @font-face {
   font-family: 'Modak';
   font-weight: 700;

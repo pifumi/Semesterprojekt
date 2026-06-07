@@ -67,19 +67,8 @@ function updateSunDisplay(cityId, sunData) {
 
 
 // Wetter-Code in Text und Icon umwandeln
-function getWeatherDescIcon(code) {
-  if (code === 0)
-    {return {text: "Klarer Himmel", icon: "img/svg/Sonne.svg"};
-  }
-
-  if (code === 1 || code === 2)
-    {return {text: "Teils bewölkt", icon: "img/svg/Sonne_Wolke.svg"};
-  }
-
-  if (code === 3)
-    {return {text: "Stark bewölkt", icon: "img/svg/Wolke.svg"};
-  }
-
+function getWeatherDescIcon(code, cloudCover) {
+  
   if (code === 45 || code === 48)
     {return { text: "Nebel", icon: "img/svg/Wolke.svg" };
   }
@@ -96,11 +85,25 @@ function getWeatherDescIcon(code) {
     return { text: "Leichter Schnee", icon: "img/svg/Wolke_wenigSchnee.svg"};
   }
 
-  if (code >= 95) {
-    return { text:"Gewitter", icon: "img/svg/Blitz_Regen.svg" };
+  if (code === 73 || code === 75 || code === 77 || code === 86) {
+    return {text: "Schnee", icon: "img/svg/Wolke_Schnee.svg"};
   }
 
-  return { text: "Wechselhaft", icon: "img/svg/Sonne_Wolke.svg" };
+  if (code >= 95) {
+    return {text:"Gewitter", icon: "img/svg/Blitz_Regen.svg" };
+  }
+
+
+  // bei trockenem Wetter Icon anhand des Bewölkungsgrades auswählen
+  if (cloudCover < 20) {
+    return {text: "Klarer Himmel", icon: "img/svg/Sonne.svg"};
+  }
+
+  if (cloudCover < 70) {
+    return {text: "Teils bewölkt", icon: "img/svg/Sonne_Wolke.svg"};
+  }
+
+ return {text: "Stark bewölkt", icon: "img/svg/Wolke.svg"};
 }
 
 
@@ -132,7 +135,7 @@ function getNextEventType(sunData) {
 
 // Hilfsfunktion Wetter-Events befüllen
 function fillEvent(eventType, cityId, forecast) {
-  const weather = getWeatherDescIcon(forecast.weather_code);
+  const weather = getWeatherDescIcon(forecast.weather_code, forecast.cloud_cover);
   const temp = Math.round(forecast.temperature_2m);
 
   document.getElementById(`temp-${eventType}-${cityId}`).innerText = `${temp}°C`;
@@ -163,13 +166,13 @@ function setBackground(sunData) {
   let phase;
   if (now < nauticalBegin) phase = 'night';
   else if (now < civilBegin) phase = 'blue-hour';
-  else if (now < sunrise - sunEvent) phase = 'sun-event';
+  else if (now < sunrise - sunEvent) phase = 'blue-hour';
   else if (now < sunrise + sunEvent) phase = 'sun-event';
   else if (now < sunrise + goldenHour) phase = 'golden-hour';
   else if (now < sunset - goldenHour) phase = 'day';
   else if (now < sunset - sunEvent) phase = 'golden-hour';
   else if (now < sunset + sunEvent) phase = 'sun-event';
-  else if (now < civilEnd) phase = 'sun-event';
+  else if (now < civilEnd) phase = 'blue-hour';
   else if (now < nauticalEnd) phase = 'blue-hour';
   else phase = 'night';
 
@@ -240,7 +243,6 @@ async function startApp() {
       return {
         temperature_2m: weatherData.hourly.temperature_2m[bestIndex],
         weather_code: weatherData.hourly.weather_code[bestIndex],
-        is_day: weatherData.hourly.is_day[bestIndex],
         cloud_cover: weatherData.hourly.cloud_cover[bestIndex]
       };
     }
@@ -249,11 +251,17 @@ async function startApp() {
     
     // Wetter-Daten ins html schreiben
     if (weatherData && weatherData.hourly && sunData && sunData.status === "OK") {
-      const sunrise = new Date(sunData.results.sunrise);
-      const sunset = new Date(sunData.results.sunset);
+      const now = new Date();
 
-      fillEvent('sunrise', city.id, getForecastHour(weatherData, sunrise));
-      fillEvent('sunset', city.id, getForecastHour(weatherData, sunset));
+      // Wenn heutige Zeit vorbei, auf morgige beziehen
+      const sunriseTime = new Date(sunData.results.sunrise);
+      if (now > sunriseTime) sunriseTime.setDate(sunriseTime.getDate() + 1);
+
+      const sunsetTime = new Date(sunData.results.sunset);
+      if (now > sunsetTime) sunsetTime.setDate(sunsetTime.getDate() + 1);
+
+      fillEvent('sunrise', city.id, getForecastHour(weatherData, sunriseTime));
+      fillEvent('sunset', city.id, getForecastHour(weatherData, sunsetTime));
 
       // Beste Option orientiert sich an nächstem Ereignis
       const nextForecast = getForecastHour(weatherData, getNextEventTime(sunData));

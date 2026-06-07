@@ -4,7 +4,7 @@
 $lat = $_GET['lat'];
 $lon = $_GET['lon'];
 // api-url
-$url = "https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&current=temperature_2m,weather_code,is_day,cloud_cover&hourly=temperature_2m,weather_code,is_day,cloud_cover&timezone=Europe/Zurich&forecast_days=2"; // url der api mit cors-problemen, z.B. https://leafletjs.com/reference.html
+$url = "https://api.open-meteo.com/v1/forecast?latitude=$lat&longitude=$lon&hourly=temperature_2m,weather_code,cloud_cover&timezone=Europe/Zurich&forecast_days=2"; // url der api mit cors-problemen, z.B. https://leafletjs.com/reference.html
 
 // do request
 $ch = curl_init($url);
